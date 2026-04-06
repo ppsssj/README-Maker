@@ -1,12 +1,12 @@
 # Readme Maker
 
-A VS Code extension for building polished README files with a block-based, PPT-like Markdown editing workflow.
+A VS Code extension for editing `README.md` files through a Markdown Preview-like WYSIWYG workflow inside VS Code.
 
 ## Overview
 
 **Readme Maker** is a VS Code extension designed to make README writing easier for developers who do not want to manually write Markdown syntax line by line.
 
-Instead of relying on raw Markdown editing, the extension aims to provide a more visual, block-based workflow inspired by presentation tools. Users can compose README documents by combining content blocks such as headings, paragraphs, lists, images, and code sections, while the extension generates clean Markdown output in the background.
+Instead of relying on raw Markdown editing, the extension aims to provide a visual workflow based on the familiar VS Code Markdown Preview experience. The current direction is a preview-first editor where the README is shown in a Markdown Preview-like layout, while lightweight editing tools can be revealed from the top and applied directly to the document.
 
 The goal is simple: reduce Markdown friction and help users build clearer, more polished project documentation faster.
 
@@ -21,13 +21,13 @@ Common issues include:
 - Difficulty organizing sections cleanly
 - Slower iteration when writing project introductions, features, usage guides, and screenshots
 
-Readme Maker addresses this by focusing on a more structured and visual authoring flow.
+Readme Maker addresses this by focusing on a more visual, preview-first authoring flow.
 
 ## Core Idea
 
-The extension is built around a **block-based README composition workflow**.
+The extension is built around a **Markdown Preview-like WYSIWYG README workflow**.
 
-Users create documentation through editable content blocks such as:
+Users work with README sections such as:
 
 - Title
 - Paragraph
@@ -37,18 +37,17 @@ Users create documentation through editable content blocks such as:
 - Image
 - Divider
 
-These blocks are arranged visually, and the extension converts them into Markdown automatically.
+The document stays synchronized with the underlying Markdown file while the editor presents a more direct visual editing surface.
 
-This makes the experience closer to building slides or structured documents, while still producing a standard `.md` file compatible with GitHub.
+The target experience is close to VS Code's default Markdown Preview, with an additional hidden top toolbar for drag-based editing actions.
 
 ## Planned Features
 
-- Block-based README editing
-- PPT-like document composition flow
-- Automatic Markdown generation
-- Live preview-friendly workflow
-- Easy section reordering
-- Support for images, code blocks, and checklists
+- Markdown Preview-like WYSIWYG editing
+- Hidden top toolbar with visual editing tools
+- Markdown synchronization back to the source file
+- Drag-based section insertion
+- Support for headings, paragraphs, lists, checklists, images, code blocks, and dividers
 - GitHub-compatible Markdown output
 
 ## Target Use Cases
@@ -67,19 +66,19 @@ It is intended to become a practical README authoring experience for developers 
 
 ## Roadmap
 
-### MVP
-- Basic block editor
+### Current MVP
+- Custom Markdown editor opened from `Ctrl+Shift+V`
+- Preview-like editing canvas
+- Hidden top toolbar with drag-in section tools
 - Title, paragraph, list, checklist, code block, image, divider
-- Markdown export to `.md`
-- Reordering blocks
-- Simple preview integration
+- Markdown source synchronization
 
 ### Next
-- README templates
-- GitHub-style section presets
-- Drag-and-drop block arrangement
+- Closer parity with the default VS Code Markdown Preview layout
+- Inline formatting tools such as bold, links, and inline code
+- Drag-and-drop block rearrangement
 - Table support
-- Badge/link helper blocks
+- Badge/link helper tools
 
 ### Future
 - Marketplace-ready polished UX
@@ -89,7 +88,32 @@ It is intended to become a practical README authoring experience for developers 
 
 ## Positioning
 
-**Readme Maker** is a VS Code extension that helps developers create README documents through a visual, structured workflow instead of manual Markdown-first editing.
+**Readme Maker** is a VS Code extension that helps developers edit README documents through a visual, preview-first workflow instead of manual Markdown-first editing.
+
+## Current Status
+
+The project is currently in an experimental prototype stage.
+
+- `Ctrl+Shift+V` opens the custom WYSIWYG editor for Markdown files
+- The main canvas is being aligned to the default VS Code Markdown Preview style
+- A hidden top toolbar appears on hover and exposes drag-based editing tools
+- The edited content stays synchronized with the underlying `.md` document
+
+## Development
+
+1. Install dependencies
+   - `npm install`
+2. Compile the extension
+   - `npm run compile`
+3. Run the extension in VS Code
+   - Open this folder in VS Code
+   - Press `F5` to launch an Extension Development Host
+4. Open a Markdown file such as `README.md`
+5. Launch the WYSIWYG view
+   - Press `Ctrl+Shift+V`
+   - Or run `Readme Maker: Open WYSIWYG Preview`
+
+The current MVP opens the Markdown document itself in a custom WYSIWYG editor and keeps the `.md` source synchronized.
 
 ## License
 

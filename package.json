@@ -1,0 +1,64 @@
+{
+  "name": "readme-maker",
+  "displayName": "Readme Maker",
+  "description": "Build polished README files with a block-based authoring workflow inside VS Code.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "readme",
+    "markdown",
+    "documentation",
+    "editor",
+    "blocks"
+  ],
+  "activationEvents": [
+    "onCommand:readmeMaker.openWysiwyg",
+    "onCustomEditor:readmeMaker.wysiwygReadme"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "readmeMaker.openWysiwyg",
+        "title": "Readme Maker: Open WYSIWYG Preview"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "readmeMaker.wysiwygReadme",
+        "displayName": "Readme Maker WYSIWYG",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "readmeMaker.openWysiwyg",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == markdown"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "lint": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.11",
+    "@types/vscode": "^1.92.0",
+    "typescript": "^5.6.3"
+  }
+}
