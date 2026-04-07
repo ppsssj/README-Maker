@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/logo3.png" alt="Readme Maker logo" width="220" />
+</p>
+
 # Readme Maker
 
 README를 WYSIWYG 방식으로 더 쉽고 구조적으로 작성할 수 있도록 지원하는 VS Code 확장 프로그램입니다.
