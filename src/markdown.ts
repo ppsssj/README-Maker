@@ -21,6 +21,7 @@ export interface ReadmeBlock {
   code?: string;
   alt?: string;
   url?: string;
+  previewUrl?: string;
   items?: string[];
   checklistItems?: ChecklistItem[];
 }

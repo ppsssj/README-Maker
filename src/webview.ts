@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-export function getEditorHtml(webview: vscode.Webview): string {
+export function getEditorHtml(webview: vscode.Webview, logoUri: string): string {
   const nonce = createNonce();
 
   return `<!DOCTYPE html>
@@ -58,6 +58,55 @@ export function getEditorHtml(webview: vscode.Webview): string {
       z-index: 50;
     }
 
+    .editor-dock {
+      position: fixed;
+      top: 10px;
+      right: 16px;
+      z-index: 55;
+      pointer-events: auto;
+    }
+
+    .editor-handle {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--panel) 88%, var(--bg) 12%);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px color-mix(in srgb, black 14%, transparent);
+      transition: border-color 120ms ease, background 120ms ease, color 120ms ease, transform 120ms ease;
+    }
+
+    .editor-handle:hover,
+    .editor-handle:focus-visible,
+    body.toolbar-pinned .editor-handle,
+    body.toolbar-visible .editor-handle {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--vscode-toolbar-hoverBackground, color-mix(in srgb, var(--panel) 68%, var(--bg) 32%));
+      transform: translateY(-1px);
+    }
+
+    .editor-handle svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .editor-handle-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
     .toolbar-shell {
       position: fixed;
       top: 0;
@@ -70,7 +119,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .toolbar-frame {
-      padding: 8px 18px 0;
+      padding: 6px 14px 0;
       opacity: 0;
       transform: translateY(calc(-100% + 6px));
       transition: transform 180ms ease, opacity 180ms ease;
@@ -80,6 +129,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     body.toolbar-visible .toolbar-frame,
+    body.toolbar-pinned .toolbar-frame,
     .toolbar-shell:hover .toolbar-frame {
       opacity: 1;
       transform: translateY(0);
@@ -89,32 +139,36 @@ export function getEditorHtml(webview: vscode.Webview): string {
     .toolbar {
       max-width: 1320px;
       margin: 0 auto;
-      padding: 10px 12px;
+      padding: 7px 10px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 14px;
       background: var(--panel);
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
     .brand-mark {
       width: 34px;
       height: 34px;
-      border-radius: 10px;
       display: grid;
       place-items: center;
-      color: var(--vscode-button-foreground, #fff);
-      font-weight: 800;
-      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 84%, black 16%), var(--accent));
+      flex: 0 0 auto;
+    }
+
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
     }
 
     .brand-copy {
@@ -130,12 +184,12 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .brand-copy strong {
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .brand-copy span {
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .toolbelt {
@@ -143,16 +197,16 @@ export function getEditorHtml(webview: vscode.Webview): string {
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       min-width: 0;
     }
 
     .tool {
       appearance: none;
-      width: 38px;
-      height: 38px;
+      width: 32px;
+      height: 32px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 0;
       background: color-mix(in srgb, var(--panel) 82%, var(--bg) 18%);
       color: var(--ink);
@@ -176,8 +230,8 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     .tool svg,
     .icon-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       stroke: currentColor;
       fill: none;
       stroke-width: 1.8;
@@ -187,7 +241,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     .toolbar-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
@@ -210,11 +264,17 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .icon-btn {
-      width: 38px;
-      height: 38px;
+      width: 32px;
+      height: 32px;
       padding: 0;
       display: inline-grid;
       place-items: center;
+    }
+
+    .icon-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .workspace {
@@ -230,6 +290,11 @@ export function getEditorHtml(webview: vscode.Webview): string {
       min-height: 100vh;
       padding: 1em 26px calc(100vh - 22px);
       background: var(--paper);
+      transition: padding-top 180ms ease;
+    }
+
+    body.toolbar-pinned .page {
+      padding-top: calc(1em + 64px);
     }
 
     .page,
@@ -243,8 +308,9 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .dropzone {
-      margin: 8px 0;
-      padding: 7px 0;
+      margin: 2px 0;
+      padding: 0;
+      min-height: 8px;
       border-radius: 12px;
       border: 1px dashed transparent;
       transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
@@ -252,7 +318,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     .dropzone::before {
       content: "Drop tool here";
-      display: block;
+      display: none;
       text-align: center;
       font-size: 11px;
       letter-spacing: 0.12em;
@@ -262,17 +328,25 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .dropzone.active {
+      min-height: 28px;
+      padding: 7px 0;
       background: var(--accent-soft);
       border-color: color-mix(in srgb, var(--accent) 42%, transparent);
       transform: scaleY(1.02);
     }
 
     .dropzone.active::before {
+      display: block;
       color: var(--accent);
     }
 
     .block {
       position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "body actions";
+      align-items: start;
+      column-gap: 8px;
       margin: 0;
       border-radius: 4px;
       transition: background 120ms ease, box-shadow 120ms ease;
@@ -285,15 +359,17 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .block-body {
+      grid-area: body;
       padding: 0 8px;
+      min-width: 0;
     }
 
     .block-actions {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+      grid-area: actions;
       display: flex;
       gap: 6px;
+      align-self: start;
+      padding: 8px 8px 0 0;
       opacity: 0;
       pointer-events: none;
       transition: opacity 120ms ease;
@@ -305,15 +381,54 @@ export function getEditorHtml(webview: vscode.Webview): string {
       pointer-events: auto;
     }
 
-    .block-actions button {
+    .mini-action {
       appearance: none;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 12px;
+      width: 30px;
+      height: 30px;
+      padding: 0;
       background: color-mix(in srgb, var(--panel) 82%, var(--bg) 18%);
       color: var(--ink);
       cursor: pointer;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .mini-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--vscode-toolbar-hoverBackground, color-mix(in srgb, var(--panel) 68%, var(--bg) 32%));
+    }
+
+    .mini-action svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mini {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 4px 10px;
+      background: color-mix(in srgb, var(--panel) 82%, var(--bg) 18%);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      justify-self: start;
+    }
+
+    .mini:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--vscode-toolbar-hoverBackground, color-mix(in srgb, var(--panel) 68%, var(--bg) 32%));
     }
 
     .editable {
@@ -350,6 +465,18 @@ export function getEditorHtml(webview: vscode.Webview): string {
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+
+    .heading-wrap:hover .heading-level,
+    .heading-wrap:focus-within .heading-level,
+    .block:focus-within .heading-level {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
     }
 
     .heading {
@@ -377,6 +504,29 @@ export function getEditorHtml(webview: vscode.Webview): string {
       flex-direction: column;
       gap: 2px;
       margin: 0 0 0.7em;
+    }
+
+    .list .mini,
+    .checklist .mini {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-2px);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+
+    .list-row:hover .mini,
+    .list-row:focus-within .mini,
+    .check-row:hover .mini,
+    .check-row:focus-within .mini,
+    .list:hover > .mini,
+    .list:focus-within > .mini,
+    .checklist:hover > .mini,
+    .checklist:focus-within > .mini,
+    .block:focus-within .list .mini,
+    .block:focus-within .checklist .mini {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
     }
 
     .list-row,
@@ -426,6 +576,24 @@ export function getEditorHtml(webview: vscode.Webview): string {
       margin-bottom: 12px;
     }
 
+    .code-meta {
+      max-height: 0;
+      margin-bottom: 0;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 160ms ease, margin-bottom 160ms ease, opacity 120ms ease;
+    }
+
+    .code-shell:hover .code-meta,
+    .code-shell:focus-within .code-meta,
+    .block:focus-within .code-meta {
+      max-height: 80px;
+      margin-bottom: 12px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .field {
       min-width: 160px;
       display: flex;
@@ -447,6 +615,53 @@ export function getEditorHtml(webview: vscode.Webview): string {
       outline: none;
     }
 
+    .image-source {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 0 0 12px;
+    }
+
+    .image-controls {
+      max-height: 0;
+      margin-bottom: 0;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 160ms ease, margin-bottom 160ms ease, opacity 120ms ease;
+    }
+
+    .image-shell:hover .image-controls,
+    .image-shell:focus-within .image-controls,
+    .image-shell.empty .image-controls,
+    .block:focus-within .image-controls {
+      max-height: 180px;
+      margin-bottom: 12px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .image-drop {
+      flex: 1 1 220px;
+      min-height: 42px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+    }
+
+    .image-drop.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
     .code-editor {
       width: 100%;
       min-height: 160px;
@@ -463,7 +678,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     .image-preview {
-      margin-top: 12px;
+      margin-top: 8px;
       overflow: hidden;
       border-radius: 0;
       border: none;
@@ -525,17 +740,37 @@ export function getEditorHtml(webview: vscode.Webview): string {
         position: static;
         margin-bottom: 10px;
       }
+
+      .block {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "actions"
+          "body";
+      }
+
+      .block-actions {
+        justify-self: end;
+        padding: 8px 8px 0 8px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="reveal-zone" id="revealZone"></div>
+  <div class="editor-dock" id="editorDock">
+    <button class="editor-handle" id="editorHandle" title="Open editor toolbar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M7 12h10"/><path d="M10 17h4"/><path d="m15 4 5 5"/><path d="m14 5 5 5"/></svg>
+      <span class="editor-handle-label">editor</span>
+    </button>
+  </div>
   <div class="app">
     <header class="toolbar-shell" id="toolbarShell">
       <div class="toolbar-frame">
         <div class="toolbar">
           <div class="brand">
-            <div class="brand-mark">R</div>
+            <div class="brand-mark">
+              <img src="${logoUri}" alt="Readme Maker logo" />
+            </div>
             <div class="brand-copy">
               <strong>Readme Maker</strong>
               <span id="fileName">README.md</span>
@@ -543,6 +778,14 @@ export function getEditorHtml(webview: vscode.Webview): string {
           </div>
           <div class="toolbelt" id="toolbelt"></div>
           <div class="toolbar-actions">
+            <button class="icon-btn" id="pinButton" title="Pin editor toolbar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6"/><path d="M10 4v5l-3 4h10l-3-4V4"/><path d="M12 13v7"/></svg>
+              <span class="sr-only">Pin editor toolbar</span>
+            </button>
+            <button class="icon-btn" id="previewButton" title="Open VS Code Markdown preview">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="sr-only">Open VS Code Markdown preview</span>
+            </button>
             <button class="icon-btn" id="sourceButton" title="Open source view">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h10"/><path d="M8 12h10"/><path d="M8 18h10"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg>
               <span class="sr-only">Open source view</span>
@@ -559,6 +802,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
     <main class="workspace">
       <div class="stage">
         <section class="page">
+          <input id="imageFileInput" class="sr-only" type="file" accept="image/*" />
           <div id="pageContent"></div>
         </section>
       </div>
@@ -584,12 +828,20 @@ export function getEditorHtml(webview: vscode.Webview): string {
     let syncTimer = undefined;
     let draggingToolType = "";
     let hideToolbarTimer = undefined;
+    let toolbarPinned = false;
+    let compositionDepth = 0;
+    let pendingSyncAfterComposition = false;
+    let pendingImageBlockId = "";
 
     const pageContent = document.getElementById("pageContent");
     const fileNameEl = document.getElementById("fileName");
     const toolbeltEl = document.getElementById("toolbelt");
     const revealZoneEl = document.getElementById("revealZone");
     const toolbarShellEl = document.getElementById("toolbarShell");
+    const editorDockEl = document.getElementById("editorDock");
+    const editorHandleEl = document.getElementById("editorHandle");
+    const pinButtonEl = document.getElementById("pinButton");
+    const imageFileInputEl = document.getElementById("imageFileInput");
 
     function createId() {
       return "block-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
@@ -605,6 +857,7 @@ export function getEditorHtml(webview: vscode.Webview): string {
         code: typeof block.code === "string" ? block.code : "",
         alt: typeof block.alt === "string" ? block.alt : "",
         url: typeof block.url === "string" ? block.url : "",
+        previewUrl: typeof block.previewUrl === "string" ? block.previewUrl : "",
         items: Array.isArray(block.items) ? block.items.map((item) => String(item)) : [],
         checklistItems: Array.isArray(block.checklistItems)
           ? block.checklistItems.map((item) => ({
@@ -628,6 +881,22 @@ export function getEditorHtml(webview: vscode.Webview): string {
       return icons[type] || icons.paragraph;
     }
 
+    function actionIconSvg(action) {
+      const icons = {
+        moveUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>',
+        moveDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+        deleteBlock: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 7V5h6v2"/><path d="M6 7l1 12h10l1-12"/></svg>'
+      };
+      return icons[action] || "";
+    }
+
+    function renderActionButton(action, index, label) {
+      return '<button class="mini-action" data-action="' + action + '" data-index="' + index + '" title="' + label + '">' +
+        actionIconSvg(action) +
+        '<span class="sr-only">' + label + '</span>' +
+      '</button>';
+    }
+
     function newBlock(type) {
       if (type === "title") return { id: createId(), type, level: 1, text: "Project Title" };
       if (type === "paragraph") return { id: createId(), type, text: "Write the section directly on the preview canvas." };
@@ -645,13 +914,32 @@ export function getEditorHtml(webview: vscode.Webview): string {
     function queueSync() {
       saveState();
       window.clearTimeout(syncTimer);
+      if (compositionDepth > 0) {
+        pendingSyncAfterComposition = true;
+        return;
+      }
+
+      pendingSyncAfterComposition = false;
       syncTimer = window.setTimeout(() => {
         vscode.postMessage({ type: "applyBlocks", blocks });
       }, 120);
     }
 
+    function isTextEditingTarget(target) {
+      return target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.dataset.role === "textContent");
+    }
+
     function setToolbarVisible(visible) {
       window.clearTimeout(hideToolbarTimer);
+      if (toolbarPinned) {
+        document.body.classList.add("toolbar-pinned");
+        document.body.classList.add("toolbar-visible");
+        return;
+      }
+
+      document.body.classList.remove("toolbar-pinned");
       if (visible) {
         document.body.classList.add("toolbar-visible");
         return;
@@ -660,6 +948,14 @@ export function getEditorHtml(webview: vscode.Webview): string {
       hideToolbarTimer = window.setTimeout(() => {
         document.body.classList.remove("toolbar-visible");
       }, 140);
+    }
+
+    function syncToolbarPinnedUi() {
+      document.body.classList.toggle("toolbar-pinned", toolbarPinned);
+      pinButtonEl.classList.toggle("active", toolbarPinned);
+      pinButtonEl.setAttribute("aria-pressed", toolbarPinned ? "true" : "false");
+      pinButtonEl.title = toolbarPinned ? "Unpin editor toolbar" : "Pin editor toolbar";
+      setToolbarVisible(toolbarPinned);
     }
 
     function insertBlock(index, type) {
@@ -707,6 +1003,25 @@ export function getEditorHtml(webview: vscode.Webview): string {
       const items = [...(blocks[index].checklistItems || [])];
       items[itemIndex] = { ...items[itemIndex], ...patch };
       blocks[index] = { ...blocks[index], checklistItems: items };
+      queueSync();
+    }
+
+    function getBlockIndexById(blockId) {
+      return blocks.findIndex((block) => block.id === blockId);
+    }
+
+    function setImageSource(blockId, url, previewUrl) {
+      const index = getBlockIndexById(blockId);
+      if (index < 0 || blocks[index].type !== "image") {
+        return;
+      }
+
+      blocks[index] = {
+        ...blocks[index],
+        url,
+        previewUrl: previewUrl || url
+      };
+      render();
       queueSync();
     }
 
@@ -780,8 +1095,8 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     function renderCode(block, index) {
-      return '<div>' +
-        '<div class="stack">' +
+      return '<div class="code-shell">' +
+        '<div class="stack code-meta">' +
           '<label class="field">Language<input data-field="language" data-index="' + index + '" value="' + escapeHtml(block.language || "") + '" placeholder="bash" /></label>' +
         '</div>' +
         '<textarea class="code-editor" data-field="code" data-index="' + index + '" placeholder="Code block">' + escapeHtml(block.code || "") + '</textarea>' +
@@ -789,14 +1104,22 @@ export function getEditorHtml(webview: vscode.Webview): string {
     }
 
     function renderImage(block, index) {
-      const preview = block.url
-        ? '<div class="image-preview"><img src="' + escapeHtml(block.url) + '" alt="' + escapeHtml(block.alt || "") + '" /></div>'
+      const previewSource = block.previewUrl || block.url;
+      const shellClass = previewSource ? "image-shell" : "image-shell empty";
+      const preview = previewSource
+        ? '<div class="image-preview"><img src="' + escapeHtml(previewSource) + '" alt="' + escapeHtml(block.alt || "") + '" /></div>'
         : '';
 
-      return '<div>' +
-        '<div class="stack">' +
-          '<label class="field">Alt text<input data-field="alt" data-index="' + index + '" value="' + escapeHtml(block.alt || "") + '" /></label>' +
-          '<label class="field" style="flex:1;">Image URL<input data-field="url" data-index="' + index + '" value="' + escapeHtml(block.url || "") + '" placeholder="https://..." /></label>' +
+      return '<div class="' + shellClass + '">' +
+        '<div class="image-controls">' +
+          '<div class="image-source">' +
+            '<button class="mini" data-action="pickImageFile" data-block-id="' + escapeHtml(block.id) + '">Choose image</button>' +
+            '<div class="image-drop" data-role="imageDrop" data-block-id="' + escapeHtml(block.id) + '">Drop an image file here</div>' +
+          '</div>' +
+          '<div class="stack">' +
+            '<label class="field">Alt text<input data-field="alt" data-index="' + index + '" value="' + escapeHtml(block.alt || "") + '" /></label>' +
+            '<label class="field" style="flex:1;">Image URL or path<input data-field="url" data-index="' + index + '" value="' + escapeHtml(block.url || "") + '" placeholder="https://... or ./assets/image.png" /></label>' +
+          '</div>' +
         '</div>' +
         preview +
       '</div>';
@@ -804,9 +1127,9 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     function renderBlock(block, index) {
       const actions = '<div class="block-actions">' +
-        '<button data-action="moveUp" data-index="' + index + '">Up</button>' +
-        '<button data-action="moveDown" data-index="' + index + '">Down</button>' +
-        '<button data-action="deleteBlock" data-index="' + index + '">Delete</button>' +
+        renderActionButton("moveUp", index, "Move block up") +
+        renderActionButton("moveDown", index, "Move block down") +
+        renderActionButton("deleteBlock", index, "Delete block") +
       '</div>';
 
       if (block.type === "title") {
@@ -870,7 +1193,18 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     window.addEventListener("message", (event) => {
       const message = event.data;
-      if (!message || message.type !== "setDocument") {
+      if (!message) {
+        return;
+      }
+
+      if (message.type === "imageImported") {
+        if (typeof message.blockId === "string" && typeof message.url === "string") {
+          setImageSource(message.blockId, message.url, typeof message.previewUrl === "string" ? message.previewUrl : message.url);
+        }
+        return;
+      }
+
+      if (message.type !== "setDocument") {
         return;
       }
 
@@ -881,6 +1215,9 @@ export function getEditorHtml(webview: vscode.Webview): string {
     });
 
     revealZoneEl.addEventListener("mouseenter", () => setToolbarVisible(true));
+    editorDockEl.addEventListener("mouseenter", () => setToolbarVisible(true));
+    editorDockEl.addEventListener("focusin", () => setToolbarVisible(true));
+    editorDockEl.addEventListener("mouseleave", () => setToolbarVisible(false));
     toolbarShellEl.addEventListener("mouseenter", () => setToolbarVisible(true));
     toolbarShellEl.addEventListener("mouseleave", () => setToolbarVisible(false));
     document.addEventListener("mousemove", (event) => {
@@ -888,14 +1225,24 @@ export function getEditorHtml(webview: vscode.Webview): string {
         setToolbarVisible(true);
       }
     });
+    editorHandleEl.addEventListener("focus", () => setToolbarVisible(true));
+    pinButtonEl.addEventListener("click", () => {
+      toolbarPinned = !toolbarPinned;
+      syncToolbarPinnedUi();
+    });
 
     document.body.addEventListener("dragstart", (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLElement)) {
+      if (!(target instanceof Element)) {
         return;
       }
 
-      const toolType = target.dataset.toolType;
+      const tool = target.closest("[data-tool-type]");
+      if (!(tool instanceof HTMLElement)) {
+        return;
+      }
+
+      const toolType = tool.dataset.toolType;
       if (!toolType) {
         return;
       }
@@ -947,7 +1294,40 @@ export function getEditorHtml(webview: vscode.Webview): string {
       }
     });
 
+    document.body.addEventListener("dragover", (event) => {
+      const imageDrop = event.target instanceof Element ? event.target.closest('[data-role="imageDrop"]') : null;
+      if (!(imageDrop instanceof HTMLElement) || !event.dataTransfer?.files?.length) {
+        return;
+      }
+
+      event.preventDefault();
+      imageDrop.classList.add("active");
+    });
+
+    document.body.addEventListener("dragleave", (event) => {
+      const imageDrop = event.target instanceof Element ? event.target.closest('[data-role="imageDrop"]') : null;
+      if (!(imageDrop instanceof HTMLElement)) {
+        return;
+      }
+
+      if (!imageDrop.contains(event.relatedTarget)) {
+        imageDrop.classList.remove("active");
+      }
+    });
+
     document.body.addEventListener("drop", (event) => {
+      const imageDrop = event.target instanceof Element ? event.target.closest('[data-role="imageDrop"]') : null;
+      if (imageDrop instanceof HTMLElement && event.dataTransfer?.files?.length) {
+        event.preventDefault();
+        imageDrop.classList.remove("active");
+        const file = event.dataTransfer.files[0];
+        const blockId = imageDrop.dataset.blockId;
+        if (file && blockId) {
+          void importImageFile(blockId, file);
+        }
+        return;
+      }
+
       const zone = event.target instanceof Element ? event.target.closest(".dropzone") : null;
       if (!(zone instanceof HTMLElement) || !draggingToolType) {
         return;
@@ -963,16 +1343,33 @@ export function getEditorHtml(webview: vscode.Webview): string {
 
     document.body.addEventListener("click", (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLElement)) {
+      if (!(target instanceof Element)) {
         return;
       }
 
-      const action = target.dataset.action;
+      const actionTarget = target.closest("[data-action]");
+      if (!(actionTarget instanceof HTMLElement)) {
+        return;
+      }
+
+      const action = actionTarget.dataset.action;
       if (!action) {
         return;
       }
 
-      const index = Number(target.dataset.index);
+      if (action === "pickImageFile") {
+        const blockId = actionTarget.dataset.blockId;
+        if (!blockId || !(imageFileInputEl instanceof HTMLInputElement)) {
+          return;
+        }
+
+        pendingImageBlockId = blockId;
+        imageFileInputEl.value = "";
+        imageFileInputEl.click();
+        return;
+      }
+
+      const index = Number(actionTarget.dataset.index);
       if (Number.isNaN(index)) {
         return;
       }
@@ -998,7 +1395,26 @@ export function getEditorHtml(webview: vscode.Webview): string {
       }
 
       if (action === "removeItem") {
-        removeRowItem(index, Number(target.dataset.itemIndex));
+        removeRowItem(index, Number(actionTarget.dataset.itemIndex));
+      }
+    });
+
+    document.body.addEventListener("compositionstart", (event) => {
+      if (!isTextEditingTarget(event.target)) {
+        return;
+      }
+
+      compositionDepth += 1;
+    });
+
+    document.body.addEventListener("compositionend", (event) => {
+      if (!isTextEditingTarget(event.target)) {
+        return;
+      }
+
+      compositionDepth = Math.max(0, compositionDepth - 1);
+      if (compositionDepth === 0 && pendingSyncAfterComposition) {
+        queueSync();
       }
     });
 
@@ -1014,7 +1430,12 @@ export function getEditorHtml(webview: vscode.Webview): string {
         const field = target.dataset.field;
         if (field) {
           const value = target instanceof HTMLSelectElement ? Number(target.value) : target.value;
-          setField(index, field, value);
+          if (field === "url") {
+            blocks[index] = { ...blocks[index], [field]: value, previewUrl: "" };
+            queueSync();
+          } else {
+            setField(index, field, value);
+          }
           if (field === "level") {
             render();
           }
@@ -1059,6 +1480,53 @@ export function getEditorHtml(webview: vscode.Webview): string {
       vscode.postMessage({ type: "openSource" });
     });
 
+    document.getElementById("previewButton").addEventListener("click", () => {
+      vscode.postMessage({ type: "openPreview" });
+    });
+
+    imageFileInputEl.addEventListener("change", () => {
+      if (!(imageFileInputEl instanceof HTMLInputElement) || !imageFileInputEl.files?.length || !pendingImageBlockId) {
+        return;
+      }
+
+      const file = imageFileInputEl.files[0];
+      void importImageFile(pendingImageBlockId, file);
+      pendingImageBlockId = "";
+      imageFileInputEl.value = "";
+    });
+
+    async function importImageFile(blockId, file) {
+      if (!file || !isImageFile(file)) {
+        return;
+      }
+
+      const dataUrl = await readFileAsDataUrl(file);
+      vscode.postMessage({
+        type: "importImageFile",
+        blockId,
+        fileName: file.name || "image",
+        dataUrl
+      });
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+        reader.onerror = () => reject(reader.error || new Error("Failed to read file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function isImageFile(file) {
+      if (typeof file.type === "string" && file.type.startsWith("image/")) {
+        return true;
+      }
+
+      return /\\.(png|jpe?g|gif|webp|svg|bmp|ico)$/i.test(file.name || "");
+    }
+
+    syncToolbarPinnedUi();
     render();
     vscode.postMessage({ type: "ready" });
   </script>

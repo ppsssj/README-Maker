@@ -2,9 +2,10 @@
   "name": "readme-maker",
   "displayName": "Readme Maker",
   "description": "Build polished README files with a block-based authoring workflow inside VS Code.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "local",
   "license": "MIT",
+  "icon": "assets/logo3.png",
   "engines": {
     "vscode": "^1.92.0"
   },
