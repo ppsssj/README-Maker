@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/logo3.png" alt="Readme Maker logo" width="220" />
+</p>
+
 # Readme Maker
 
 A VS Code extension for editing `README.md` files through a Markdown Preview-like WYSIWYG workflow inside VS Code.
