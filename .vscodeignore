@@ -1,5 +1,9 @@
 .vscode/**
 src/**
 tsconfig.json
-*.map
+**/*.map
 node_modules/.cache/**
+test/**
+tmp-webview-script.js
+assets/logo.png
+assets/logo1.png

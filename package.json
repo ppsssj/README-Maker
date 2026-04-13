@@ -3,9 +3,18 @@
   "displayName": "Readme Maker",
   "description": "Build polished README files with a block-based authoring workflow inside VS Code.",
   "version": "0.0.2",
-  "publisher": "local",
+  "publisher": "ppsssj",
   "license": "MIT",
+  "author": "ppsssj",
   "icon": "assets/logo3.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ppsssj/README-Maker.git"
+  },
+  "homepage": "https://github.com/ppsssj/README-Maker#readme",
+  "bugs": {
+    "url": "https://github.com/ppsssj/README-Maker/issues"
+  },
   "engines": {
     "vscode": "^1.92.0"
   },
